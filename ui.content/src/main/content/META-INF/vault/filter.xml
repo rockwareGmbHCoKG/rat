@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/conf/rat" mode="merge"/>
+    <filter root="/content/rat" mode="merge"/>
+    <filter root="/content/dam/rat/asset.jpg" mode="merge"/>
+    <filter root="/content/experience-fragments/rat" mode="merge"/>
+</workspaceFilter>
