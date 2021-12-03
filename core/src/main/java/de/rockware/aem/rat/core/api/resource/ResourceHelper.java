@@ -2,7 +2,7 @@ package de.rockware.aem.rat.core.api.resource;
 
 import com.day.cq.commons.jcr.JcrConstants;
 
-import de.rockware.aem.rat.core.impl.OSGiUtils;
+import de.rockware.aem.rat.core.impl.ResourceUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -185,7 +185,7 @@ public class ResourceHelper {
 	public static ResourceResolver getResolver(ResourceResolverFactory resourceResolverFactory, Class clazz) {
 		ResourceResolver resolver = null; //NOPMD
 		try {
-			resolver = resourceResolverFactory.getServiceResourceResolver(OSGiUtils.getAuthInfoMap(clazz));
+			resolver = resourceResolverFactory.getServiceResourceResolver(ResourceUtils.getAuthInfoMap(clazz));
 		} catch (LoginException ex) {
 			logger.debug("Cannot get resourceresolver for class {}: {}.", clazz.getName(), ex.getMessage());
 		}

@@ -1,4 +1,4 @@
-package de.rockware.aem.rat.core.api.resource;
+package de.rockware.aem.rat.core.impl.config;
 
 import com.day.cq.commons.jcr.JcrConstants;
 

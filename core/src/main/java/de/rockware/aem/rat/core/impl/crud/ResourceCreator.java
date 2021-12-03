@@ -1,7 +1,7 @@
 package de.rockware.aem.rat.core.impl.crud;
 
 import de.rockware.aem.rat.core.api.resource.ResourceHelper;
-import de.rockware.aem.rat.core.api.resource.ResourcePathType;
+import de.rockware.aem.rat.core.impl.config.ResourcePathType;
 import de.rockware.aem.rat.core.impl.config.RichConfiguration;
 
 import org.apache.commons.lang.StringUtils;

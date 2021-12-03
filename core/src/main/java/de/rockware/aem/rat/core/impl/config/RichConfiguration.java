@@ -1,10 +1,12 @@
 package de.rockware.aem.rat.core.impl.config;
 
+import de.rockware.aem.rat.core.api.caconfig.GlobalRATConfig;
 import de.rockware.aem.rat.core.api.caconfig.TenantRATConfig;
-import de.rockware.aem.rat.core.api.resource.ResourcePathType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,67 +16,94 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Getter
-public class RichConfiguration {
+public final class RichConfiguration {
 
     private final List<ResourcePathType> pathsToCreateList = new ArrayList<>();
 
-    private boolean isActive = false;
+    private final Map<GroupType, GroupData> groupMap = new HashMap<>();
+
+    private boolean isTenantActive = false;
+
+    private boolean isGlobalActive = false;
+
+    private int readAccessLevel = 0;
 
     private int endLevel = 0;
 
     private int startLevel = 0;
 
+    private String groupNamePrefix = "";
+
+    private String groupNameSuffix = "";
+
+    private String groupNameSeperator = ".";
+
+    private boolean enableReadInheritance = false;
+
     /**
      * C'tor.
-     * @param pConfig   the context aware configuration data.
+     * @param tenantRATConfig   the context aware configuration data.
+     * @param globalRATConfig global configuration data.
      */
-    public RichConfiguration(TenantRATConfig pConfig) {
-        if (pConfig != null) {
-            initData(pConfig);
+    public RichConfiguration(TenantRATConfig tenantRATConfig, GlobalRATConfig globalRATConfig) {
+        if (tenantRATConfig != null) {
+            initData(tenantRATConfig, globalRATConfig);
         }
     }
 
     /**
      * Init local data.
-     * @param pConfig   CaConfig
+     * @param tenantRATConfig   CaConfig
+     * @param globalRATConfig   global config
      */
-    private void initData(TenantRATConfig pConfig) {
-        if (pConfig.createCampaignsFolder()) {
+    private void initData(TenantRATConfig tenantRATConfig, GlobalRATConfig globalRATConfig) {
+        if (tenantRATConfig.createCampaignsFolder()) {
             pathsToCreateList.add(ResourcePathType.CAMPAIGNS);
         }
-        if (pConfig.createCommunitiesFolder()) {
+        if (tenantRATConfig.createCommunitiesFolder()) {
             pathsToCreateList.add(ResourcePathType.COMMUNITIES);
         }
-        if (pConfig.createCatalogsFolder()) {
+        if (tenantRATConfig.createCatalogsFolder()) {
             pathsToCreateList.add(ResourcePathType.CATALOGS);
         }
-        if (pConfig.createDAMFolder()) {
+        if (tenantRATConfig.createDAMFolder()) {
             pathsToCreateList.add(ResourcePathType.DAM);
         }
-        if (pConfig.createFormsFolder()) {
+        if (tenantRATConfig.createFormsFolder()) {
             pathsToCreateList.add(ResourcePathType.FORMS);
         }
-        if (pConfig.createLaunchesFolder()) {
+        if (tenantRATConfig.createLaunchesFolder()) {
             pathsToCreateList.add(ResourcePathType.LAUNCHES);
         }
-        if (pConfig.createProjectsFolder()) {
+        if (tenantRATConfig.createProjectsFolder()) {
             pathsToCreateList.add(ResourcePathType.PROJECTS);
         }
-        if (pConfig.createXFFolder()) {
+        if (tenantRATConfig.createXFFolder()) {
             pathsToCreateList.add(ResourcePathType.EXPERIENCE_FRAGMENTS);
         }
-        if (pConfig.createTagsFolder()) {
+        if (tenantRATConfig.createTagsFolder()) {
             pathsToCreateList.add(ResourcePathType.TAGS);
         }
-        if (pConfig.createScreensFolder()) {
+        if (tenantRATConfig.createScreensFolder()) {
             pathsToCreateList.add(ResourcePathType.SCREENS);
         }
-        if (pConfig.createUGCFolder()) {
+        if (tenantRATConfig.createUGCFolder()) {
             pathsToCreateList.add(ResourcePathType.UGC);
         }
-        startLevel = pConfig.startLevel();
-        endLevel = pConfig.endLevel();
-        isActive = pConfig.isActive();
+        startLevel = tenantRATConfig.startLevel();
+        endLevel = tenantRATConfig.endLevel();
+        isGlobalActive = globalRATConfig.isActive();
+        isTenantActive = isGlobalActive && tenantRATConfig.isActive();
+        readAccessLevel = globalRATConfig.readAccessLevel();
+        groupNamePrefix = globalRATConfig.groupNamePrefix();
+        groupNameSuffix = globalRATConfig.groupNameSuffix();
+        groupNameSeperator = globalRATConfig.groupNameSeparator();
+        enableReadInheritance = globalRATConfig.enableReadInheritance();
+        if (tenantRATConfig.createEditors()) {
+            // TODO: check if CaConfigs can work with enums
+            // TODO: otherwise do this stuff for each group
+            groupMap.put(GroupType.EDITOR, new GroupData(GroupType.EDITOR, tenantRATConfig.groupNameEditors(), groupNamePrefix, groupNameSuffix));
+        }
     }
 
     /**

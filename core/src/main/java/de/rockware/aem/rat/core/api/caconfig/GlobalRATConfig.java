@@ -54,6 +54,6 @@ public @interface GlobalRATConfig {
     boolean enableReadInheritance() default false;
 
     @Property(label = "Read Access Level", description = "All users will have read access from 1 to the level specified here.")
-    int readAcessLevel() default 3;
+    int readAccessLevel() default 3;
 
 }

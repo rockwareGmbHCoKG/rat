@@ -1,5 +1,6 @@
 package de.rockware.aem.rat.core.api.security;
 
+import de.rockware.aem.rat.core.impl.config.GroupType;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 

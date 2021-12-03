@@ -1,8 +1,7 @@
-package de.rockware.aem.rat.core.api.security;
+package de.rockware.aem.rat.core.impl.config;
 
 /**
  * Different group types.
- * Created by ogebert on 14.02.16.
  */
 public enum GroupType {
 	NO_ACCESS,

@@ -2,7 +2,7 @@ package de.rockware.aem.rat.core.impl.services;
 
 
 import de.rockware.aem.rat.core.api.resource.ResourceHelper;
-import de.rockware.aem.rat.core.api.security.GroupType;
+import de.rockware.aem.rat.core.impl.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
 import de.rockware.aem.rat.core.api.security.services.TenantSecurityService;
 import de.rockware.aem.rat.core.api.services.CreateTenantConfigService;

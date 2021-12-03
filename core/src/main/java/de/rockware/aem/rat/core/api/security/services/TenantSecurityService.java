@@ -1,6 +1,6 @@
 package de.rockware.aem.rat.core.api.security.services;
 
-import de.rockware.aem.rat.core.api.security.GroupType;
+import de.rockware.aem.rat.core.impl.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
 
 import org.apache.jackrabbit.api.security.user.Group;

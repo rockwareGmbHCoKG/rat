@@ -1,7 +1,7 @@
 package de.rockware.aem.rat.core.api.services;
 
 
-import de.rockware.aem.rat.core.api.security.GroupType;
+import de.rockware.aem.rat.core.impl.config.GroupType;
 
 import java.util.Map;
 

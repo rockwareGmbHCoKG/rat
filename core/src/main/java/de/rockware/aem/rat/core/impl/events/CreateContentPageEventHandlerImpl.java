@@ -7,11 +7,10 @@ import de.rockware.aem.rat.core.api.resource.ResourceHelper;
 import de.rockware.aem.rat.core.api.security.services.TenantSecurityService;
 import de.rockware.aem.rat.core.api.services.GroupManagerService;
 import de.rockware.aem.rat.core.api.services.InstanceService;
-import de.rockware.aem.rat.core.impl.OSGiUtils;
+import de.rockware.aem.rat.core.impl.ResourceUtils;
 import de.rockware.aem.rat.core.impl.config.RichConfiguration;
 import de.rockware.aem.rat.core.impl.crud.ResourceCreator;
 
-import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -41,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 		JobConsumer.PROPERTY_TOPICS + "=" + CreateContentPageEventHandlerImpl.JOB_TOPICS
 })
 @Slf4j
-public class CreateContentPageEventHandlerImpl implements EventHandler, JobConsumer {
+public final class CreateContentPageEventHandlerImpl implements EventHandler, JobConsumer {
 
 	private static final String PAGE_EVENT = "pageEvent";
 
@@ -79,7 +78,7 @@ public class CreateContentPageEventHandlerImpl implements EventHandler, JobConsu
 	public JobResult process(Job job) {
 		log.trace("Start job processing.");
 		PageEvent pageEvent = (PageEvent) job.getProperty(PAGE_EVENT);
-		ResourceResolver resolver = getResolver();
+		ResourceResolver resolver = ResourceUtils.getResolver(resourceResolverFactory, this.getClass());
 		if (resolver != null && pageEvent != null && pageEvent.isLocal()) {
 			Iterator<PageModification> modificationsIterator = pageEvent.getModifications();
 			while (modificationsIterator.hasNext()) {
@@ -89,20 +88,21 @@ public class CreateContentPageEventHandlerImpl implements EventHandler, JobConsu
 						List<String> resourcePaths = new ArrayList<>();
 						String path = modification.getPath();
 						int currentLevel = ResourceHelper.getResourceLevel(path);
-
-						if (isRelevantResource(path, resolver)) {
-							Resource currentResource = resolver.getResource(path);
-							RichConfiguration richConfig = new RichConfiguration(gMService.getTenantRATConfig(currentResource));
-							switch (modification.getType()) {
-								case CREATED:
-									resourcePaths.addAll(ResourceCreator.createResources(path, richConfig, resolver));
-									break;
-								case DELETED:
-								case MOVED:
-									log.debug("Nothing to do here");
+						Resource currentResource = resolver.getResource(path);
+						if (currentResource != null) {
+							RichConfiguration richConfig = new RichConfiguration(gMService.getTenantRATConfig(currentResource), gMService.getGlobalRATConfig(currentResource));
+							if (isRelevantResource(path, richConfig)) {
+								switch (modification.getType()) {
+									case CREATED:
+										resourcePaths.addAll(ResourceCreator.createResources(path, richConfig, resolver));
+										break;
+									case DELETED:
+									case MOVED:
+										log.debug("Nothing to do here");
+								}
+							} else {
+								log.debug("Path {} is not a content page path. Will not create dam path, acls and more.", path);
 							}
-						} else {
-							log.debug("Path {} is not a content page path. Will not create dam path, acls and more.", path);
 						}
 						securityService.handleGroupsAndACLs(resourcePaths, path, currentLevel, resolver);
 					} catch (Exception ex) {
@@ -120,32 +120,11 @@ public class CreateContentPageEventHandlerImpl implements EventHandler, JobConsu
 	/**
 	 * Check if the path level is ok.
 	 * @param resourcePath	current path
-	 * @param resolver resource resolver
+	 * @param richConfig configuration
 	 * @return	true if actions are needed to be taken
 	 */
-	private boolean isRelevantResource(String resourcePath, ResourceResolver resolver) {
-		boolean returnValue = false;
-		Resource currentResource = resolver.getResource(resourcePath);
-		if (currentResource != null) {
-			RichConfiguration richConfig = new RichConfiguration(gMService.getTenantRATConfig(currentResource));
-			int currentLevel = ResourceHelper.getResourceLevel(resourcePath);
-			returnValue = richConfig.isActive() &&  currentLevel >= richConfig.getStartLevel() && currentLevel <= richConfig.getEndLevel();
-		}
-		return returnValue;
-	}
-
-	/**
-	 * Get a resource resolver.
-	 *
-	 * @return resolver or null
-	 */
-	private ResourceResolver getResolver() {
-		ResourceResolver resolver = null; //NOPMD
-		try {
-			resolver = resourceResolverFactory.getServiceResourceResolver(OSGiUtils.getAuthInfoMap(getClass()));
-		} catch (LoginException ex) {
-			log.debug("Cannot get resourceresolver: {}.", ex.getMessage());
-		}
-		return resolver;
+	private boolean isRelevantResource(String resourcePath, RichConfiguration richConfig) {
+		int currentLevel = ResourceHelper.getResourceLevel(resourcePath);
+		return richConfig.isTenantActive() &&  currentLevel >= richConfig.getStartLevel() && currentLevel <= richConfig.getEndLevel();
 	}
 }
