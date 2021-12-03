@@ -90,7 +90,7 @@ public final class CreateContentPageEventHandlerImpl implements EventHandler, Jo
 						int currentLevel = ResourceHelper.getResourceLevel(path);
 						Resource currentResource = resolver.getResource(path);
 						if (currentResource != null) {
-							RichConfiguration richConfig = new RichConfiguration(gMService.getTenantRATConfig(currentResource), gMService.getGlobalRATConfig(currentResource));
+							RichConfiguration richConfig = new RichConfiguration(gMService.getTenantRATConfig(currentResource), gMService.getGlobalRATConfig(currentResource), path);
 							if (isRelevantResource(path, richConfig)) {
 								switch (modification.getType()) {
 									case CREATED:
@@ -103,8 +103,8 @@ public final class CreateContentPageEventHandlerImpl implements EventHandler, Jo
 							} else {
 								log.debug("Path {} is not a content page path. Will not create dam path, acls and more.", path);
 							}
+							securityService.handleGroupsAndACLs(resourcePaths, richConfig, currentLevel, resolver);
 						}
-						securityService.handleGroupsAndACLs(resourcePaths, path, currentLevel, resolver);
 					} catch (Exception ex) {
 						log.error("Could not process job: {}", ex.getMessage());
 					}

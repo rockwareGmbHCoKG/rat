@@ -2,6 +2,7 @@ package de.rockware.aem.rat.core.impl.services;
 
 
 import de.rockware.aem.rat.core.api.resource.ResourceHelper;
+import de.rockware.aem.rat.core.impl.config.GroupData;
 import de.rockware.aem.rat.core.impl.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
 import de.rockware.aem.rat.core.api.security.services.TenantSecurityService;
@@ -9,6 +10,7 @@ import de.rockware.aem.rat.core.api.services.CreateTenantConfigService;
 import de.rockware.aem.rat.core.api.services.CreateTenantGroupsService;
 import de.rockware.aem.rat.core.api.services.CreateTenantPageService;
 import de.rockware.aem.rat.core.api.services.GroupManagerService;
+import de.rockware.aem.rat.core.impl.config.RichConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -63,7 +65,7 @@ public class DefaultTenantSecurityServiceImpl implements TenantSecurityService {
 	}
 
 	@Override
-	public void handleGroupsAndACLs(List<String> resourcePaths, String path, int currentLevel, ResourceResolver resolver) {
+	public void handleGroupsAndACLs(List<String> resourcePaths, RichConfiguration richConfig, int currentLevel, ResourceResolver resolver) {
 		Map<GroupType, GroupWrapper> groupWrapperMap;
 		Map<GroupType, GroupWrapper> topLevelWrapperMap = new HashMap<>();
 		createGroupWrapper("", "/home/groups/toplevel", GroupType.TOPLEVEL_READER, topLevelWrapperMap, TOP_LEVEL_PATH_LIST, resolver);
@@ -73,7 +75,7 @@ public class DefaultTenantSecurityServiceImpl implements TenantSecurityService {
 			addGroupToAEMStandardGroups(topLevelWrapper.getGroup(), resolver);
 		}
 		int offset = currentLevel - createTenantConfigService.getEndLevel();
-		String newPath = path;
+		String newPath = richConfig.getPath();
 		List<String> newResourcePaths = new ArrayList<>();
 		newResourcePaths.addAll(resourcePaths);
 		int newCurrentLevel = Math.min(currentLevel, createTenantConfigService.getEndLevel());
@@ -131,6 +133,12 @@ public class DefaultTenantSecurityServiceImpl implements TenantSecurityService {
 			logger.info("Level {} is out of range - doing nothing.", level);
 		}
 		return wrappedGroups;
+	}
+
+	public Group entitleGroup(GroupData groupData, RichConfiguration richConfiguration, ResourceResolver resolver) {
+		resolver.refresh();
+		Session session = resolver.adaptTo(Session.class);
+
 	}
 
 

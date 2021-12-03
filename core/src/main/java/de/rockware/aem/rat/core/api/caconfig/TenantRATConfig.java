@@ -69,7 +69,7 @@ public @interface TenantRATConfig {
     boolean createUseradmins() default true;
 
     @Property(label = "Group Name For Useradmins", description = "Group name for useradmin group.")
-    String groupNameUseradmin() default "useradmins";
+    String groupNameUseradmins() default "useradmins";
 
 
 }

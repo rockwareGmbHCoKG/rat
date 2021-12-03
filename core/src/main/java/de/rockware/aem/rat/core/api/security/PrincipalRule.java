@@ -13,41 +13,18 @@ public class PrincipalRule {
 	 * Replication permission <code>PRIVILEGE_CRX_REPLICATE</code>
 	 */
 	public static final String PRIVILEGE_CRX_REPLICATE = "crx:replicate";
-
-	private final String groupPrefix;
-	private final String groupSuffix;
 	private final Permission[] permissions;
 	private final boolean allowRule;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param groupPrefix the prefix of group name
-	 * @param groupSuffix the suffix of group name
 	 * @param allowRule true if allow else false
 	 * @param permissions rule permissions
 	 */
-	public PrincipalRule(String groupPrefix, String groupSuffix, boolean allowRule, Permission... permissions) {
-		this.groupPrefix = groupPrefix;
-		this.groupSuffix = groupSuffix;
+	public PrincipalRule(boolean allowRule, Permission... permissions) {
 		this.permissions = permissions;
 		this.allowRule = allowRule;
-	}
-
-	/**
-	 * Getter...
-	 * @return	the value
-	 */
-	public String getGroupPrefix() {
-		return groupPrefix;
-	}
-
-	/**
-	 * Getter...
-	 * @return	the value
-	 */
-	public String getGroupSuffix() {
-		return groupSuffix;
 	}
 
 	/**

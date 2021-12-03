@@ -3,6 +3,8 @@ package de.rockware.aem.rat.core.impl.config;
 import de.rockware.aem.rat.core.api.caconfig.GlobalRATConfig;
 import de.rockware.aem.rat.core.api.caconfig.TenantRATConfig;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,8 @@ public final class RichConfiguration {
     private final List<ResourcePathType> pathsToCreateList = new ArrayList<>();
 
     private final Map<GroupType, GroupData> groupMap = new HashMap<>();
+
+    private String path;
 
     private boolean isTenantActive = false;
 
@@ -44,8 +48,10 @@ public final class RichConfiguration {
      * C'tor.
      * @param tenantRATConfig   the context aware configuration data.
      * @param globalRATConfig global configuration data.
+     * @param path the path that fired the event
      */
-    public RichConfiguration(TenantRATConfig tenantRATConfig, GlobalRATConfig globalRATConfig) {
+    public RichConfiguration(TenantRATConfig tenantRATConfig, GlobalRATConfig globalRATConfig, String path) {
+        this.path = path;
         if (tenantRATConfig != null) {
             initData(tenantRATConfig, globalRATConfig);
         }
@@ -97,13 +103,37 @@ public final class RichConfiguration {
         readAccessLevel = globalRATConfig.readAccessLevel();
         groupNamePrefix = globalRATConfig.groupNamePrefix();
         groupNameSuffix = globalRATConfig.groupNameSuffix();
-        groupNameSeperator = globalRATConfig.groupNameSeparator();
+        groupNameSeperator = StringUtils.isEmpty(globalRATConfig.groupNameSeparator()) ? "." : globalRATConfig.groupNameSeparator();
         enableReadInheritance = globalRATConfig.enableReadInheritance();
-        if (tenantRATConfig.createEditors()) {
-            // TODO: check if CaConfigs can work with enums
-            // TODO: otherwise do this stuff for each group
-            groupMap.put(GroupType.EDITOR, new GroupData(GroupType.EDITOR, tenantRATConfig.groupNameEditors(), groupNamePrefix, groupNameSuffix));
+        if (tenantRATConfig.createReaders()) {
+            groupMap.put(GroupType.READER, new GroupData(GroupType.READER, tenantRATConfig.groupNameReaders()));
         }
+        if (tenantRATConfig.createEditors()) {
+            groupMap.put(GroupType.EDITOR, new GroupData(GroupType.EDITOR, tenantRATConfig.groupNameEditors()));
+        }
+        if (tenantRATConfig.createPublishers()) {
+            groupMap.put(GroupType.PUBLISHER, new GroupData(GroupType.PUBLISHER, tenantRATConfig.groupNamePublishers()));
+        }
+        if (tenantRATConfig.createUseradmins()) {
+            groupMap.put(GroupType.USER_ADMIN, new GroupData(GroupType.USER_ADMIN, tenantRATConfig.groupNameUseradmins()));
+        }
+        if (globalRATConfig.createGlobalReaders()) {
+            groupMap.put(GroupType.GLOBAL_READER, new GroupData(GroupType.GLOBAL_READER, globalRATConfig.groupNameGlobalReaders()));
+        }
+        if (globalRATConfig.createGlobalEditors()) {
+            groupMap.put(GroupType.GLOBAL_EDITOR, new GroupData(GroupType.GLOBAL_EDITOR, globalRATConfig.groupNameGlobalEditors()));
+        }
+        if (globalRATConfig.createGlobalPublishers()) {
+            groupMap.put(GroupType.GLOBAL_PUBLISHER, new GroupData(GroupType.GLOBAL_PUBLISHER, globalRATConfig.groupNameGlobalPublishers()));
+        }
+        if (globalRATConfig.createGlobalUseradmins()) {
+            groupMap.put(GroupType.GLOBAL_USER_ADMIN, new GroupData(GroupType.GLOBAL_USER_ADMIN, globalRATConfig.groupNameGlobalUseradmin()));
+        }
+        if (globalRATConfig.createGlobalSupport()) {
+            groupMap.put(GroupType.GLOBAL_SUPPORT, new GroupData(GroupType.GLOBAL_SUPPORT, globalRATConfig.groupNameGlobalSupport()));
+        }
+        // top level readers are always needed and active
+        groupMap.put(GroupType.TOPLEVEL_READER, new GroupData(GroupType.TOPLEVEL_READER, globalRATConfig.groupNameToplevelReaders()));
     }
 
     /**
@@ -113,6 +143,24 @@ public final class RichConfiguration {
      */
     public boolean needsCreation(ResourcePathType type) {
         return pathsToCreateList.contains(type);
+    }
+
+    /**
+     * Add prefix, suffix and use the correct separator.
+     * @param originalGroupName name as written in the config
+     * @return  name with prefix, suffix and the path
+     */
+    private String computeGroupName(String originalGroupName) {
+        StringBuilder groupName = new StringBuilder();
+        if (StringUtils.isNotEmpty(path)) {
+            if (!StringUtils.isEmpty(groupNamePrefix)) {
+                groupName.append(groupNamePrefix).append(groupNameSeperator);
+            }
+            String groupPath = StringUtils.replace(StringUtils.substringAfter(path, "/content/"), "/", groupNameSeperator);
+            groupName.append(groupPath).append(groupNameSeperator);
+        }
+        groupName.append(originalGroupName);
+        return groupName.toString();
     }
 
 }

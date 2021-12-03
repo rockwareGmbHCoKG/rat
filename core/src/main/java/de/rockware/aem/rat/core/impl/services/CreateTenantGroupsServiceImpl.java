@@ -422,18 +422,4 @@ public class CreateTenantGroupsServiceImpl implements CreateTenantGroupsService 
 		return topLevelReadersGroupName;
 	}
 
-	@Override
-	public String computeGroupName(GroupType type, String path) {
-		StringBuilder groupName = new StringBuilder();
-		if (StringUtils.isNotEmpty(path)) {
-			if (!StringUtils.isEmpty(groupNamePrefix)) {
-				groupName.append(groupNamePrefix).append(".");
-			}
-			String groupPath = StringUtils.replace(StringUtils.substringAfter(path, "/content/"), "/", groupNameSeparator);
-			groupName.append(groupPath).append(".");
-		}
-		groupName.append(groupNamesMap.get(type));
-		return groupName.toString();
-	}
-	
 }

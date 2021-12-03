@@ -2,6 +2,7 @@ package de.rockware.aem.rat.core.api.security.services;
 
 import de.rockware.aem.rat.core.impl.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
+import de.rockware.aem.rat.core.impl.config.RichConfiguration;
 
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -17,12 +18,12 @@ public interface TenantSecurityService {
 
 	/**
 	 * Create groups, create and update acls, check group inheritance and more.
-	 * @param resourcePaths	all the resources that need acls
-	 * @param path			path that has been created / modified
-	 * @param currentLevel	current level in the node tree
-	 * @param resolver		resource resolver
-	 */
-	void handleGroupsAndACLs(List<String> resourcePaths, String path, int currentLevel, ResourceResolver resolver);
+     * @param resourcePaths    all the resources that need acls
+     * @param richConfig            path that has been created / modified
+     * @param currentLevel    current level in the node tree
+     * @param resolver        resource resolver
+     */
+	void handleGroupsAndACLs(List<String> resourcePaths, RichConfiguration richConfig, int currentLevel, ResourceResolver resolver);
 
 	/**
 	 * Create all the groups for a given path.
