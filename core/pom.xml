@@ -142,9 +142,9 @@ Sling-Model-Packages: de.rockware.aem.rat.core.api.models,de.rockware.aem.rat.co
                                         </rule>
                                     </rules>
                                     <excludes>
-                                        <exclude>de/rockware/aem/token/api/caconfigs/*</exclude>
-                                        <exclude>de/rockware/aem/token/api/models/*</exclude>
-                                        <exclude>de/rockware/aem/token/api/service/*</exclude>
+                                        <exclude>de/rockware/aem/rat/core/api/caconfig/*</exclude>
+                                        <exclude>de/rockware/aem/rat/core/api/observer/*</exclude>
+                                        <exclude>de/rockware/aem/rat/core/api/services/*</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>

@@ -8,7 +8,6 @@ import javax.jcr.security.Privilege;
 
 /**
  * Permission. Contains all or at least most of the possible peprmission sets.
- * Created by ogebert on 12.02.16.
  */
 public enum Permission {
 
@@ -72,5 +71,5 @@ public enum Permission {
 		return ArrayUtils.contains(privileges, privilege);
 	}
 
-	private String[] privileges;
+	private final String[] privileges;
 }

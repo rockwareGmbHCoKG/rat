@@ -1,5 +1,6 @@
 package de.rockware.aem.rat.core.impl.services;
 
+import de.rockware.aem.rat.core.api.caconfig.GlobalRATConfig;
 import de.rockware.aem.rat.core.api.caconfig.TenantRATConfig;
 import de.rockware.aem.rat.core.api.security.Permission;
 import de.rockware.aem.rat.core.api.security.PrincipalRule;
@@ -21,7 +22,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.slf4j.Logger;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -37,22 +37,21 @@ import javax.jcr.ValueFactory;
 import javax.jcr.security.AccessControlEntry;
 import javax.jcr.security.Privilege;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Default group manager implementation.
  */
-@Component(name = "Rockware default GroupManager Service", immediate = true)
+@Component(service=GroupManagerService.class, name = "Rockware default GroupManager Service", immediate = true)
+@Slf4j
 public class DefaultGroupManagerService implements GroupManagerService {
-
-	private static final Logger logger = getLogger(DefaultGroupManagerService.class);
 
 	/**
 	 * Permissions <code>RULE_EVERYONE</code> for everyone.
 	 */
-	private static final PrincipalRule RULE_EVERYONE = new PrincipalRule("", EveryonePrincipal.NAME, false, Permission.ALL);
+	private static final PrincipalRule RULE_EVERYONE = new PrincipalRule(false, Permission.ALL);
 
-	private static final PrincipalRule RULE_ADMINISTRATORS = new PrincipalRule("", "administrators", true, Permission.ALL);
+	private static final PrincipalRule RULE_ADMINISTRATORS = new PrincipalRule(true, Permission.ALL);
 
 	/** path home */
 	private static final String PATH_HOME = "/home";
@@ -68,31 +67,31 @@ public class DefaultGroupManagerService implements GroupManagerService {
 
 	@Override
 	public List<Group> createGroups(String path, List<String> groupIds, Session session) {
-		logger.trace("Start creating groups.");
+		log.trace("Start creating groups.");
 		List<Group> groupList = new ArrayList<>();
 		try {
 			UserManager userManager = AccessControlUtil.getUserManager(session);
 			for(String groupId : groupIds) {
-				logger.trace("Try to get data to create group {}.", groupId);
+				log.trace("Try to get data to create group {}.", groupId);
 				Authorizable authorizable = userManager.getAuthorizable(groupId);
 				if(authorizable == null) {
 					StringBuilder homePath = new StringBuilder(path);
 					if(!path.startsWith(PATH_HOME)) {
 						homePath.insert(0, PATH_HOME_GROUPS);
 					}
-					logger.debug("Creating group with id: {}, path: {}", new Object[] { groupId, homePath.toString() });
+					log.debug("Creating group with id: {}, path: {}", groupId, homePath.toString() );
 					Group group = userManager.createGroup(groupId, new PrincipalImpl(groupId), homePath.toString());
 					session.save();
 					groupList.add(group);
 				} else if (authorizable.isGroup()) {
-					logger.debug("Group with id {} already exists.", groupId);
+					log.debug("Group with id {} already exists.", groupId);
 					groupList.add((Group) authorizable);
 				} else {
-					logger.error("Authorizable with id {} exists but is a user, not a group.", groupId);
+					log.error("Authorizable with id {} exists but is a user, not a group.", groupId);
 				}
 			}
 		} catch (RepositoryException ex) {
-			logger.error("Repository Exception: {}", ex.getMessage());
+			log.error("Repository Exception: {}", ex.getMessage());
 		}
 		return groupList;
 	}
@@ -107,11 +106,11 @@ public class DefaultGroupManagerService implements GroupManagerService {
 				if (authorizable.isGroup()) {
 					group = (Group) userManager.getAuthorizable(groupId);
 				} else {
-					logger.info("Authorizable {} is no group. Cannot convert.", authorizable.getID());
+					log.info("Authorizable {} is no group. Cannot convert.", authorizable.getID());
 				}
 			}
 		} catch (RepositoryException ex) {
-			logger.error("Repository Exception: {}", ex.getMessage());
+			log.error("Repository Exception: {}", ex.getMessage());
 		}
 		return group;
 	}
@@ -129,13 +128,13 @@ public class DefaultGroupManagerService implements GroupManagerService {
 			group.addMember(authorizable);
 			session.save();
 		} catch (RepositoryException ex) {
-			logger.error("Cannot add authorizable {} to group {}: {}", new Object[] {authorizable, group, ex.getMessage()});
+			log.error("Cannot add authorizable {} to group {}: {}", authorizable, group, ex.getMessage());
 		}
 	}
 
 	@Override
 	public void cleanup(Session session) {
-		// TODO: check existing groups, add missing groups, delete obsolete groups
+		log.trace("Nothing to do here.");
 	}
 
 	/**
@@ -146,7 +145,7 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	 */
 	@Activate
 	public void activate(ComponentContext context) {
-		logger.info("Activating Default Group Manager service.");
+		log.info("Activating Default Group Manager service.");
 	}
 
 	/**
@@ -156,13 +155,13 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	 */
 	@Deactivate
 	public void deactivate(ComponentContext context) {
-		logger.info("Deactivating Default Group Manager service with context {}.", context.toString());
+		log.info("Deactivating Default Group Manager service with context {}.", context.toString());
 	}
 
 	@Override
 	public void setStartLevelNodesACLs(List<String> pathList, Session session, Group topLevelGroup) {
 		try {
-			logger.trace("Creating start level ACL entries.");
+			log.trace("Creating start level ACL entries.");
 			UserManager userManager = AccessControlUtil.getUserManager(session);
 			Map<Group, PrincipalRule> groupRulesMap = new LinkedHashMap<>();
 			Group everyone = (Group) userManager.getAuthorizable(EveryonePrincipal.NAME);
@@ -173,7 +172,7 @@ public class DefaultGroupManagerService implements GroupManagerService {
 			doSetGroupACLs(groupRulesMap, pathList, session, true);
 			session.save();
 		} catch (RepositoryException ex) {
-			logger.error("Cannot set acl for start level nodes: {}", ex.getMessage());
+			log.error("Cannot set acl for start level nodes: {}", ex.getMessage());
 		}
 	}
 
@@ -186,17 +185,17 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	 */
 	private void doSetGroupACLs(Map<Group, PrincipalRule> groupRulesMap, List<String> pathList, Session session, boolean readInheritance) {
 		try {
-			logger.trace("Processing acls for a set of groups and paths.");
+			log.trace("Processing acls for a set of groups and paths.");
 			JackrabbitAccessControlManager acMgr = (JackrabbitAccessControlManager) session.getAccessControlManager();
 			ValueFactory vf = session.getValueFactory();
 			for(String path : pathList) {
-				logger.trace("Starting with path {}.", path);
+				log.trace("Starting with path {}.", path);
 				JackrabbitAccessControlList controlList = AccessControlUtils.getAccessControlList(session, path);
 				for(Map.Entry<Group, PrincipalRule> entry : groupRulesMap.entrySet()) {
 					Group group = entry.getKey();
 					PrincipalRule rule = entry.getValue();
 					Principal definedPrincipal = group.getPrincipal();
-					logger.trace("Building rules for group {}.", group.getID());
+					log.trace("Building rules for group {}.", group.getID());
 					for(Permission permission : rule.getPermissions()) {
 						Map<String, Value> restrictions = new HashMap<>();
 						Privilege[] definedPrivileges = AccessControlUtils.privilegesFromNames(session, permission.getPrivileges());
@@ -211,97 +210,59 @@ public class DefaultGroupManagerService implements GroupManagerService {
 					}
 				}
 				acMgr.setPolicy(controlList.getPath(), controlList);
-				logger.trace("********************************************************");
-				if (logger.isTraceEnabled()) {
-					logger.trace("ControlList order before sorting it:");
+				log.trace("********************************************************");
+				if (log.isTraceEnabled()) {
+					log.trace("ControlList order before sorting it:");
 					for(AccessControlEntry entry : controlList.getAccessControlEntries()) {
-						logger.trace(entry.getPrincipal().getName());
+						log.trace(entry.getPrincipal().getName());
 					}
 				}
 				reArrangeAcls(path, session);
-				if (logger.isTraceEnabled()) {
-					logger.trace("ControlList order after sorting it:");
+				if (log.isTraceEnabled()) {
+					log.trace("ControlList order after sorting it:");
 					for(AccessControlEntry entry : AccessControlUtils.getAccessControlList(session, path).getAccessControlEntries()) {
-						logger.trace(entry.getPrincipal().getName());
+						log.trace(entry.getPrincipal().getName());
 					}
 				}
-				logger.trace("********************************************************");
+				log.trace("********************************************************");
 			}
-			logger.trace("Finished processing.");
+			log.trace("Finished processing.");
 		} catch (RepositoryException ex) {
-			logger.error("Repository Exception: {}", ex.getMessage());
+			log.error("Repository Exception: {}", ex.getMessage());
 		}
 	}
-
-	/** this code is not needed anymore */
-	public void sortACLEntries(String path, Session session) {
-		try {
-			session.refresh(true);
-			JackrabbitAccessControlManager acMgr = (JackrabbitAccessControlManager) session.getAccessControlManager();
-			logger.trace("Sorting acl-entries for path {}.", path);
-			JackrabbitAccessControlList controlList = AccessControlUtils.getAccessControlList(session, path);
-			AccessControlEntry[] entries = controlList.getAccessControlEntries();
-			List<AccessControlEntry> denyEntryList = new ArrayList<>();
-			AccessControlEntry allowEntry = null;
-			for(AccessControlEntry entry : entries) {
-				if(((JackrabbitAccessControlEntry) entry).isAllow()) {
-					if(allowEntry == null) {
-						allowEntry = entry;
-						logger.trace("First allow entry in list is: {}.", allowEntry.getPrincipal().getName());
-					}
-				} else {
-					denyEntryList.add(entry);
-					logger.trace("Added deny entry {}.", entry.getPrincipal().getName());
-				}
-			}
-			for(AccessControlEntry entry : denyEntryList) {
-				logger.debug("Inserting {} in front of {}.", entry.getPrincipal().getName(), allowEntry == null ? "(NOTHING)" : allowEntry.getPrincipal().getName());
-				controlList.orderBefore(entry, allowEntry);
-			}
-			acMgr.setPolicy(controlList.getPath(), controlList);
-		} catch (RepositoryException ex) {
-			logger.error("Cannot sort ACL Entries: {}.", ex.getMessage());
-		}
-	}
-
-
 
 	@Override
 	public void reArrangeAcls(String path, Session session){
 		try {
             session.refresh(true);
             JackrabbitAccessControlManager acMgr = (JackrabbitAccessControlManager) session.getAccessControlManager();
-            logger.trace("Sorting acl-entries for path {}.", path);
+            log.trace("Sorting acl-entries for path {}.", path);
             JackrabbitAccessControlList controlList = AccessControlUtils.getAccessControlList(session, path);
             AccessControlEntry[] entries = controlList.getAccessControlEntries();
             List<AccessControlEntry> denyEntryList = new ArrayList<>();
             int counter = 0;
             for(AccessControlEntry entry : entries) {
             	counter++;
-            	logger.trace("Checking entry ().", entry.getPrincipal().getName());
+            	log.trace("Checking entry {}}.", entry.getPrincipal().getName());
                 if(!((JackrabbitAccessControlEntry) entry).isAllow()) {
-					logger.trace("Entry is Deny-Entry.", entry.getPrincipal().getName());
+					log.trace("Entry is Deny-Entry {}.", entry.getPrincipal().getName());
                 	denyEntryList.add(entry);
                 } else {
-					logger.trace("Entry is Allow-Entry.", entry.getPrincipal().getName());
+					log.trace("Entry is Allow-Entry. {}", entry.getPrincipal().getName());
 				}
             }
             for(AccessControlEntry entry : denyEntryList) {
-                logger.debug("Inserting {} in front of {}.", entry.getPrincipal().getName(),
+                log.debug("Inserting {} in front of {}.", entry.getPrincipal().getName(),
 							 controlList.getAccessControlEntries()[0].getPrincipal().getName());
                 controlList.orderBefore(entry, controlList.getAccessControlEntries()[0]);
             }
             acMgr.setPolicy(controlList.getPath(), controlList);
         } catch (RepositoryException ex) {
-            logger.error("Cannot sort ACL Entries: {}.", ex.getMessage());
+            log.error("Cannot sort ACL Entries: {}.", ex.getMessage());
         }
 	}
 
-	/**
-	 * Get the token configuration.
-	 * @param resource  current resource
-	 * @return  token config
-	 */
 	@Override
 	public TenantRATConfig getTenantRATConfig(Resource resource) {
 		TenantRATConfig pConfig = null;
@@ -309,6 +270,18 @@ public class DefaultGroupManagerService implements GroupManagerService {
 			ConfigurationBuilder cBuilder = resource.adaptTo(ConfigurationBuilder.class);
 			if (cBuilder != null) {
 				pConfig = cBuilder.as(TenantRATConfig.class);
+			}
+		}
+		return pConfig;
+	}
+
+	@Override
+	public GlobalRATConfig getGlobalRATConfig(Resource resource) {
+		GlobalRATConfig pConfig = null;
+		if (resource != null) {
+			ConfigurationBuilder cBuilder = resource.adaptTo(ConfigurationBuilder.class);
+			if (cBuilder != null) {
+				pConfig = cBuilder.as(GlobalRATConfig.class);
 			}
 		}
 		return pConfig;

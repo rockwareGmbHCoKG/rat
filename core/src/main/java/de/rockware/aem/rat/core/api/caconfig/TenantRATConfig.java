@@ -5,7 +5,7 @@ import org.apache.sling.caconfig.annotation.Property;
 
 @Configuration(label = "Tenant RAT Config", description = "Control automatic page and folder creation and acl settings for your tenant.")
 public @interface TenantRATConfig {
-    @Property(label = "", description = "If set to false no missing ACLs and groups will be created.")
+    @Property(label = "Activate Local Config", description = "If set to false no missing ACLs and groups will be created.")
     boolean isActive() default false;
 
     @Property(label = "Start Level", description = "Groups will be set from this level (/content has level 0).")

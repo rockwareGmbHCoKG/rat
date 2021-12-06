@@ -5,7 +5,7 @@ import org.apache.sling.caconfig.annotation.Property;
 
 @Configuration(label = "Global RAT Config", description = "Control global acl settings.")
 public @interface GlobalRATConfig {
-    @Property(label = "", description = "If set to false no missing ACLs and groups will be created. If unchecked, all tenant configs will be diabled as well.")
+    @Property(label = "Activate Global Config", description = "If set to false no missing ACLs and groups will be created. If unchecked, all tenant configs will be diabled as well.")
     boolean isActive() default false;
 
     @Property(label = "Create Global Readers", description = "Create a global readers group.")

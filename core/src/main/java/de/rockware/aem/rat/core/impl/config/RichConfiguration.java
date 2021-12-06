@@ -22,9 +22,9 @@ public final class RichConfiguration {
 
     private final List<ResourcePathType> pathsToCreateList = new ArrayList<>();
 
-    private final Map<GroupType, GroupData> groupMap = new HashMap<>();
+    private final Map<GroupType, String> groupMap = new HashMap<>();
 
-    private String path;
+    private final String path;
 
     private boolean isTenantActive = false;
 
@@ -106,34 +106,34 @@ public final class RichConfiguration {
         groupNameSeperator = StringUtils.isEmpty(globalRATConfig.groupNameSeparator()) ? "." : globalRATConfig.groupNameSeparator();
         enableReadInheritance = globalRATConfig.enableReadInheritance();
         if (tenantRATConfig.createReaders()) {
-            groupMap.put(GroupType.READER, new GroupData(GroupType.READER, tenantRATConfig.groupNameReaders()));
+            groupMap.put(GroupType.READER, tenantRATConfig.groupNameReaders());
         }
         if (tenantRATConfig.createEditors()) {
-            groupMap.put(GroupType.EDITOR, new GroupData(GroupType.EDITOR, tenantRATConfig.groupNameEditors()));
+            groupMap.put(GroupType.EDITOR, tenantRATConfig.groupNameEditors());
         }
         if (tenantRATConfig.createPublishers()) {
-            groupMap.put(GroupType.PUBLISHER, new GroupData(GroupType.PUBLISHER, tenantRATConfig.groupNamePublishers()));
+            groupMap.put(GroupType.PUBLISHER, tenantRATConfig.groupNamePublishers());
         }
         if (tenantRATConfig.createUseradmins()) {
-            groupMap.put(GroupType.USER_ADMIN, new GroupData(GroupType.USER_ADMIN, tenantRATConfig.groupNameUseradmins()));
+            groupMap.put(GroupType.USER_ADMIN, tenantRATConfig.groupNameUseradmins());
         }
         if (globalRATConfig.createGlobalReaders()) {
-            groupMap.put(GroupType.GLOBAL_READER, new GroupData(GroupType.GLOBAL_READER, globalRATConfig.groupNameGlobalReaders()));
+            groupMap.put(GroupType.GLOBAL_READER, globalRATConfig.groupNameGlobalReaders());
         }
         if (globalRATConfig.createGlobalEditors()) {
-            groupMap.put(GroupType.GLOBAL_EDITOR, new GroupData(GroupType.GLOBAL_EDITOR, globalRATConfig.groupNameGlobalEditors()));
+            groupMap.put(GroupType.GLOBAL_EDITOR, globalRATConfig.groupNameGlobalEditors());
         }
         if (globalRATConfig.createGlobalPublishers()) {
-            groupMap.put(GroupType.GLOBAL_PUBLISHER, new GroupData(GroupType.GLOBAL_PUBLISHER, globalRATConfig.groupNameGlobalPublishers()));
+            groupMap.put(GroupType.GLOBAL_PUBLISHER, globalRATConfig.groupNameGlobalPublishers());
         }
         if (globalRATConfig.createGlobalUseradmins()) {
-            groupMap.put(GroupType.GLOBAL_USER_ADMIN, new GroupData(GroupType.GLOBAL_USER_ADMIN, globalRATConfig.groupNameGlobalUseradmin()));
+            groupMap.put(GroupType.GLOBAL_USER_ADMIN, globalRATConfig.groupNameGlobalUseradmin());
         }
         if (globalRATConfig.createGlobalSupport()) {
-            groupMap.put(GroupType.GLOBAL_SUPPORT, new GroupData(GroupType.GLOBAL_SUPPORT, globalRATConfig.groupNameGlobalSupport()));
+            groupMap.put(GroupType.GLOBAL_SUPPORT, globalRATConfig.groupNameGlobalSupport());
         }
         // top level readers are always needed and active
-        groupMap.put(GroupType.TOPLEVEL_READER, new GroupData(GroupType.TOPLEVEL_READER, globalRATConfig.groupNameToplevelReaders()));
+        groupMap.put(GroupType.TOPLEVEL_READER, globalRATConfig.groupNameToplevelReaders());
     }
 
     /**
@@ -145,22 +145,11 @@ public final class RichConfiguration {
         return pathsToCreateList.contains(type);
     }
 
-    /**
-     * Add prefix, suffix and use the correct separator.
-     * @param originalGroupName name as written in the config
-     * @return  name with prefix, suffix and the path
-     */
-    private String computeGroupName(String originalGroupName) {
-        StringBuilder groupName = new StringBuilder();
-        if (StringUtils.isNotEmpty(path)) {
-            if (!StringUtils.isEmpty(groupNamePrefix)) {
-                groupName.append(groupNamePrefix).append(groupNameSeperator);
-            }
-            String groupPath = StringUtils.replace(StringUtils.substringAfter(path, "/content/"), "/", groupNameSeperator);
-            groupName.append(groupPath).append(groupNameSeperator);
-        }
-        groupName.append(originalGroupName);
-        return groupName.toString();
+    public boolean isValidLevel(int level) {
+        return (level > 0) && (startLevel <= level) && (level <= endLevel);
     }
 
+    public boolean isReadAccessLevel(int level) {
+        return level <= readAccessLevel;
+    }
 }

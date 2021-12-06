@@ -4,7 +4,7 @@ import com.day.cq.wcm.api.PageEvent;
 import com.day.cq.wcm.api.PageModification;
 
 import de.rockware.aem.rat.core.api.resource.ResourceHelper;
-import de.rockware.aem.rat.core.api.security.services.TenantSecurityService;
+import de.rockware.aem.rat.core.api.services.TenantSecurityService;
 import de.rockware.aem.rat.core.api.services.GroupManagerService;
 import de.rockware.aem.rat.core.api.services.InstanceService;
 import de.rockware.aem.rat.core.impl.ResourceUtils;
@@ -110,9 +110,7 @@ public final class CreateContentPageEventHandlerImpl implements EventHandler, Jo
 					}
 				}
 			}
-			if (resolver.isLive()) {
-				resolver.close();
-			}
+			ResourceUtils.closeResolver(resolver);
 		}
 		return JobResult.OK;
 	}

@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 /**
  * Store a principal's permissions and more in one object.
- * Created by ogebert on 12.02.16.
  */
 public class PrincipalRule {
 	/**
