@@ -70,5 +70,4 @@ class ResourceHelperTest {
             ResourceHelper.getResourceLevel("noLeading_slash/");
         });
     }
-
 }
