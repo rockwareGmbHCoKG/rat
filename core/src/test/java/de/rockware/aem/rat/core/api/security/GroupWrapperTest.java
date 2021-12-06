@@ -100,7 +100,14 @@ class GroupWrapperTest {
         pathList.add("/content/experience-fragments/mypath");
         Group group2 = mock(Group.class);
         when(group2.getID()).thenReturn("groupid");
-        GroupWrapper wrapper2 = new GroupWrapper(group, GroupType.EDITOR, pathList);
+        GroupWrapper wrapper2 = new GroupWrapper(group2, GroupType.EDITOR, pathList);
         assertNotNull(wrapper2.getGroupId());
+        Group group3 = mock(Group.class);
+        when(group3.getID()).thenThrow(RepositoryException.class);
+        GroupWrapper wrapper3 = new GroupWrapper(group3, GroupType.EDITOR, pathList);
+        assertEquals(wrapper3.getGroupId(), "");
+        assertTrue(GroupType.GLOBAL_EDITOR.isGlobalGroup());
+        assertFalse(GroupType.GLOBAL_EDITOR.isLocalGroup());
     }
+
 }

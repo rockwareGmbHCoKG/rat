@@ -14,6 +14,6 @@
  *  limitations under the License.
  */
 @Version("1.0.1")
-package de.rockware.aem.rat.core.api.caconfig;
+package de.rockware.aem.rat.core.impl.models;
 
 import org.osgi.annotation.versioning.Version;
