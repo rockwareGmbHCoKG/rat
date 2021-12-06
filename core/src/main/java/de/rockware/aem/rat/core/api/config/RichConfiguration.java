@@ -1,4 +1,4 @@
-package de.rockware.aem.rat.core.impl.config;
+package de.rockware.aem.rat.core.api.config;
 
 import de.rockware.aem.rat.core.api.caconfig.GlobalRATConfig;
 import de.rockware.aem.rat.core.api.caconfig.TenantRATConfig;

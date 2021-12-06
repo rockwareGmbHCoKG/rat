@@ -8,7 +8,7 @@ import de.rockware.aem.rat.core.api.services.TenantSecurityService;
 import de.rockware.aem.rat.core.api.services.GroupManagerService;
 import de.rockware.aem.rat.core.api.services.InstanceService;
 import de.rockware.aem.rat.core.impl.ResourceUtils;
-import de.rockware.aem.rat.core.impl.config.RichConfiguration;
+import de.rockware.aem.rat.core.api.config.RichConfiguration;
 import de.rockware.aem.rat.core.impl.crud.ResourceCreator;
 
 import org.apache.sling.api.resource.Resource;

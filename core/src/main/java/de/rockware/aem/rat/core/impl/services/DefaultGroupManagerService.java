@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Default group manager implementation.
  */
-@Component(service=GroupManagerService.class, name = "Rockware default GroupManager Service", immediate = true)
+@Component(service=GroupManagerService.class, name = "RockwareDefaultGroupManagerService", immediate = true)
 @Slf4j
 public class DefaultGroupManagerService implements GroupManagerService {
 

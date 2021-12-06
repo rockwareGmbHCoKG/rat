@@ -4,8 +4,8 @@ import com.day.cq.wcm.api.PageManager;
 import com.drew.lang.annotations.NotNull;
 
 import de.rockware.aem.rat.core.api.resource.ResourceHelper;
-import de.rockware.aem.rat.core.impl.config.ResourcePathType;
-import de.rockware.aem.rat.core.impl.config.RichConfiguration;
+import de.rockware.aem.rat.core.api.config.ResourcePathType;
+import de.rockware.aem.rat.core.api.config.RichConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;

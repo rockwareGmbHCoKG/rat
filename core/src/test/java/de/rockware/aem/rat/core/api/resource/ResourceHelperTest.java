@@ -1,15 +1,12 @@
 package de.rockware.aem.rat.core.api.resource;
 
+import io.wcm.testing.mock.aem.junit5.AemContext;
+import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import io.wcm.testing.mock.aem.junit5.AemContext;
-import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,7 +58,7 @@ class ResourceHelperTest {
     }
 
     @Test
-    void getResourceLevelEmpytPath() {
+    void getResourceLevelEmptyPath() {
         assertThrows(IllegalArgumentException.class, () -> {
             ResourceHelper.getResourceLevel(null);
         });

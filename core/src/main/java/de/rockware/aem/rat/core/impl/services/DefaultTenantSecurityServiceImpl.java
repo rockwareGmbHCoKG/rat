@@ -2,11 +2,11 @@ package de.rockware.aem.rat.core.impl.services;
 
 
 import de.rockware.aem.rat.core.api.resource.ResourceHelper;
-import de.rockware.aem.rat.core.impl.config.GroupType;
+import de.rockware.aem.rat.core.api.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
 import de.rockware.aem.rat.core.api.services.TenantSecurityService;
 import de.rockware.aem.rat.core.api.services.GroupManagerService;
-import de.rockware.aem.rat.core.impl.config.RichConfiguration;
+import de.rockware.aem.rat.core.api.config.RichConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * {@inheritDoc}
  */
-@Component(service=TenantSecurityService.class, name = "RAT - Tenant Security Interface", configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
+@Component(service=TenantSecurityService.class, name = "RATTenantSecurityInterface", configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 @Slf4j
 public class DefaultTenantSecurityServiceImpl implements TenantSecurityService {
 

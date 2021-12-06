@@ -42,7 +42,7 @@
         <sling.password>admin</sling.password>
         <vault.user>admin</vault.user>
         <vault.password>admin</vault.password>
-        <core.wcm.components.version>2.15.2</core.wcm.components.version>
+        <core.wcm.components.version>2.10.0</core.wcm.components.version>
         <jacoco.version>0.8.7</jacoco.version>
         <bnd.version>5.1.2</bnd.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -623,7 +623,7 @@ Bundle-DocURL:
             <dependency>
                 <groupId>com.adobe.aem</groupId>
                 <artifactId>uber-jar</artifactId>
-                <version>6.5.7</version>
+                <version>6.5.9</version>
                 <scope>provided</scope>
             </dependency>
             <!-- Apache Sling Dependencies -->
@@ -690,20 +690,20 @@ Bundle-DocURL:
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>5.6.2</version>
+                <version>5.8.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.3.3</version>
+                <version>4.0.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>3.3.3</version>
+                <version>4.0.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -711,20 +711,42 @@ Bundle-DocURL:
                 <artifactId>junit-addons</artifactId>
                 <version>1.4</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>xercesImpl</artifactId>
+                        <groupId>xerces</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.wcm</groupId>
                 <artifactId>io.wcm.testing.aem-mock.junit5</artifactId>
-                <version>3.0.2</version>
+                <version>4.1.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>uk.org.lidalia</groupId>
                 <artifactId>slf4j-test</artifactId>
-                <version>1.0.1</version>
+                <version>1.2.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>rockware-nexus-releases</id>
+            <name>Rockware Repository</name>
+            <url>https://repo.rockware.info/repository/rockware-release/</url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>rockware-nexus-snapshots</id>
+            <name>Rockware Snapshots</name>
+            <url>https://repo.rockware.info/repository/rockware-snapshots/</url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

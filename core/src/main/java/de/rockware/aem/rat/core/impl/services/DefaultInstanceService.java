@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Default implementation. Check runmodes and more.
  */
-@Component(name = "Rockware default Instance Service", immediate = true)
+@Component(name = "RockwareDefaultInstanceService", immediate = true)
 public class DefaultInstanceService implements InstanceService {
 
 		@Reference

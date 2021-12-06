@@ -1,7 +1,8 @@
 package de.rockware.aem.rat.core.api.security;
 
-import de.rockware.aem.rat.core.impl.config.GroupType;
-
+import de.rockware.aem.rat.core.api.config.GroupType;
+import io.wcm.testing.mock.aem.junit5.AemContext;
+import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.RepositoryException;
-
-import io.wcm.testing.mock.aem.junit5.AemContext;
-import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

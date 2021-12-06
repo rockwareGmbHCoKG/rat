@@ -1,8 +1,8 @@
 package de.rockware.aem.rat.core.api.services;
 
-import de.rockware.aem.rat.core.impl.config.GroupType;
+import de.rockware.aem.rat.core.api.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
-import de.rockware.aem.rat.core.impl.config.RichConfiguration;
+import de.rockware.aem.rat.core.api.config.RichConfiguration;
 
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.sling.api.resource.ResourceResolver;
