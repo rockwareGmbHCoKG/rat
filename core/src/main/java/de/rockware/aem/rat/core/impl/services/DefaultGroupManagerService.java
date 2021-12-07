@@ -1,5 +1,7 @@
 package de.rockware.aem.rat.core.impl.services;
 
+import com.drew.lang.annotations.NotNull;
+
 import de.rockware.aem.rat.core.api.caconfig.GlobalRATConfig;
 import de.rockware.aem.rat.core.api.caconfig.TenantRATConfig;
 import de.rockware.aem.rat.core.api.security.Permission;
@@ -42,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Default group manager implementation.
  */
-@Component(service=GroupManagerService.class, name = "RockwareDefaultGroupManagerService", immediate = true)
+@Component(service = GroupManagerService.class, name = "RockwareDefaultGroupManagerService", immediate = true)
 @Slf4j
 public class DefaultGroupManagerService implements GroupManagerService {
 
@@ -71,27 +73,33 @@ public class DefaultGroupManagerService implements GroupManagerService {
 		List<Group> groupList = new ArrayList<>();
 		try {
 			UserManager userManager = AccessControlUtil.getUserManager(session);
-			for(String groupId : groupIds) {
-				log.trace("Try to get data to create group {}.", groupId);
-				Authorizable authorizable = userManager.getAuthorizable(groupId);
-				if(authorizable == null) {
-					StringBuilder homePath = new StringBuilder(path);
-					if(!path.startsWith(PATH_HOME)) {
-						homePath.insert(0, PATH_HOME_GROUPS);
-					}
-					log.debug("Creating group with id: {}, path: {}", groupId, homePath.toString() );
-					Group group = userManager.createGroup(groupId, new PrincipalImpl(groupId), homePath.toString());
-					session.save();
-					groupList.add(group);
-				} else if (authorizable.isGroup()) {
-					log.debug("Group with id {} already exists.", groupId);
-					groupList.add((Group) authorizable);
-				} else {
-					log.error("Authorizable with id {} exists but is a user, not a group.", groupId);
-				}
-			}
+			groupList = addGroupsToList(groupIds, userManager, path, session);
 		} catch (RepositoryException ex) {
 			log.error("Repository Exception: {}", ex.getMessage());
+		}
+		return groupList;
+	}
+
+	protected List<Group> addGroupsToList(List<String> groupIds, UserManager userManager, String path, Session session) throws RepositoryException {
+		List<Group> groupList = new ArrayList<>();
+		for(String groupId : groupIds) {
+			log.trace("Try to get data to create group {}.", groupId);
+			Authorizable authorizable = userManager.getAuthorizable(groupId);
+			if(authorizable == null) {
+				StringBuilder homePath = new StringBuilder(path);
+				if(!path.startsWith(PATH_HOME)) {
+					homePath.insert(0, PATH_HOME_GROUPS);
+				}
+				log.debug("Creating group with id: {}, path: {}", groupId, homePath.toString() );
+				Group group = userManager.createGroup(groupId, new PrincipalImpl(groupId), homePath.toString());
+				session.save();
+				groupList.add(group);
+			} else if (authorizable.isGroup()) {
+				log.debug("Group with id {} already exists.", groupId);
+				groupList.add((Group) authorizable);
+			} else {
+				log.error("Authorizable with id {} exists but is a user, not a group.", groupId);
+			}
 		}
 		return groupList;
 	}
@@ -123,7 +131,7 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	}
 
 	@Override
-	public void addMember(Group group, Authorizable authorizable, Session session) {
+	public void addMember(@NotNull Group group, @NotNull Authorizable authorizable, @NotNull Session session) {
 		try {
 			group.addMember(authorizable);
 			session.save();
@@ -162,8 +170,8 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	public void setStartLevelNodesACLs(List<String> pathList, Session session, Group topLevelGroup) {
 		try {
 			log.trace("Creating start level ACL entries.");
-			UserManager userManager = AccessControlUtil.getUserManager(session);
 			Map<Group, PrincipalRule> groupRulesMap = new LinkedHashMap<>();
+			UserManager userManager = AccessControlUtil.getUserManager(session);
 			Group everyone = (Group) userManager.getAuthorizable(EveryonePrincipal.NAME);
 			groupRulesMap.put(everyone, RULE_EVERYONE);
 			groupRulesMap.put(topLevelGroup, RULE_EVERYONE);
@@ -236,7 +244,6 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	public void reArrangeAcls(String path, Session session){
 		try {
             session.refresh(true);
-            JackrabbitAccessControlManager acMgr = (JackrabbitAccessControlManager) session.getAccessControlManager();
             log.trace("Sorting acl-entries for path {}.", path);
             JackrabbitAccessControlList controlList = AccessControlUtils.getAccessControlList(session, path);
             AccessControlEntry[] entries = controlList.getAccessControlEntries();
@@ -257,6 +264,7 @@ public class DefaultGroupManagerService implements GroupManagerService {
 							 controlList.getAccessControlEntries()[0].getPrincipal().getName());
                 controlList.orderBefore(entry, controlList.getAccessControlEntries()[0]);
             }
+			JackrabbitAccessControlManager acMgr = (JackrabbitAccessControlManager) session.getAccessControlManager();
             acMgr.setPolicy(controlList.getPath(), controlList);
         } catch (RepositoryException ex) {
             log.error("Cannot sort ACL Entries: {}.", ex.getMessage());

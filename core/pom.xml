@@ -187,6 +187,16 @@ Sling-Model-Packages: de.rockware.aem.rat.core.api.models,de.rockware.aem.rat.co
     <dependencies>
         <!-- Testing -->
         <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.resourceresolver-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.sling-mock-oak</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -204,11 +214,6 @@ Sling-Model-Packages: de.rockware.aem.rat.core.api.models,de.rockware.aem.rat.co
         <dependency>
             <groupId>junit-addons</groupId>
             <artifactId>junit-addons</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.testing.resourceresolver-mock</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
