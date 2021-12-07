@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Eventhandler. This service tracks the creation of new pages and creates matching dam folders, cloud configs, user etc if needed.
- * Created by ogebert on 28.01.16.
  */
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.OPTIONAL, property = {
 		"event.topics=" + PageEvent.EVENT_TOPIC,

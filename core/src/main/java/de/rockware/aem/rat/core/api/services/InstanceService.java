@@ -35,12 +35,4 @@ public interface InstanceService {
 	 * @return true if runmode is set
 	 */
 	boolean hasRunModeValue(String value);
-
-	/**
-	 * Returns the first best matched instance run mode
-	 *
-	 * @return - the run mode
-	 */
-	String getInstanceRunMode();
-
 }

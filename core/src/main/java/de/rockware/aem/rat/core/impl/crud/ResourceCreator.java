@@ -43,7 +43,7 @@ public class ResourceCreator {
         return pathList;
     }
 
-    public List<String> createPageResources(@NotNull ResourceResolver resolver, String resourcePath) {
+    public static List<String> createPageResources(@NotNull ResourceResolver resolver, String resourcePath) {
         List<String> paths = new ArrayList<>();
         Resource resource = resolver.getResource(resourcePath);
         if (resource != null) {

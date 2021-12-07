@@ -51,19 +51,4 @@ public class DefaultInstanceService implements InstanceService {
 			Set<String> runModes = settings.getRunModes();
 			return runModes.contains(value);
 		}
-
-		@Override
-		public String getInstanceRunMode() {
-			if(isLocal()) {
-				return Externalizer.LOCAL;
-			}
-			if(isAuthor()) {
-				return Externalizer.AUTHOR;
-			}
-			if(isPublish()) {
-				return Externalizer.PUBLISH;
-			}
-			return settings.getRunModes().iterator().next();
-		}
-
 }

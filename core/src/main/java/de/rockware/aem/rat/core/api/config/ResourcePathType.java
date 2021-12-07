@@ -1,7 +1,5 @@
 package de.rockware.aem.rat.core.api.config;
 
-import com.day.cq.commons.jcr.JcrConstants;
-
 /**
  * All required resource path types.
  */
@@ -12,7 +10,7 @@ public enum ResourcePathType {
     private final String path;
 
     ResourcePathType(String path) {
-        this.path = "/" + JcrConstants.JCR_CONTENT + "/" + path;
+        this.path = "/content/" + path;
     }
 
     public String getPath() {

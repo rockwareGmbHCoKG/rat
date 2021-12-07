@@ -150,6 +150,6 @@ public final class RichConfiguration {
     }
 
     public boolean isReadAccessLevel(int level) {
-        return level <= readAccessLevel;
+        return (level > 0) && (level <= readAccessLevel);
     }
 }
