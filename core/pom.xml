@@ -20,7 +20,7 @@
     <parent>
         <groupId>de.rockware.aem</groupId>
         <artifactId>rat</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>rat.core</artifactId>
@@ -145,6 +145,7 @@ Sling-Model-Packages: de.rockware.aem.rat.core.api.models,de.rockware.aem.rat.co
                                         <exclude>de/rockware/aem/rat/core/api/caconfig/*</exclude>
                                         <exclude>de/rockware/aem/rat/core/api/observer/*</exclude>
                                         <exclude>de/rockware/aem/rat/core/api/services/*</exclude>
+                                        <exclude>de/rockware/aem/rat/core/impl/events/*</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>

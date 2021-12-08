@@ -22,7 +22,6 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith({ AemContextExtension.class, MockitoExtension.class })
 class DefaultGroupManagerServiceTest {
@@ -43,9 +42,7 @@ class DefaultGroupManagerServiceTest {
 
     @Test
     void createGroup() {
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            gmService.createGroup("", "blubbsi", session);
-        });
+      gmService.createGroup("", "blubbsi", session);
     }
 
     @Test

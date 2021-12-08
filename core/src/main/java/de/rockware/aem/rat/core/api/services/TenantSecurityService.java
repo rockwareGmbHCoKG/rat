@@ -1,5 +1,7 @@
 package de.rockware.aem.rat.core.api.services;
 
+import com.drew.lang.annotations.NotNull;
+
 import de.rockware.aem.rat.core.api.config.GroupType;
 import de.rockware.aem.rat.core.api.security.GroupWrapper;
 import de.rockware.aem.rat.core.api.config.RichConfiguration;
@@ -89,4 +91,13 @@ public interface TenantSecurityService {
 	 * @param resolver		resource resolver
 	 */
 	void addGroupToAEMStandardGroups(Group group, ResourceResolver resolver);
+
+	/**
+	 * Compute group name based on type and path.
+	 * @param type			group type
+	 * @param path			content path
+	 * @param richConfig	configuration
+	 * @return				group name
+	 */
+	String computeGroupName(@NotNull GroupType type, String path, @NotNull RichConfiguration richConfig);
 }

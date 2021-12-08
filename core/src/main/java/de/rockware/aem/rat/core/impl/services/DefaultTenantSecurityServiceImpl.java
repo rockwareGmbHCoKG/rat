@@ -298,17 +298,28 @@ public class DefaultTenantSecurityServiceImpl implements TenantSecurityService {
 
 	@Override
 	public void createGroupWrapper(String contentPath, String groupPath, GroupType type, Map<GroupType, GroupWrapper> wrappedGroups, List<String> resourcePaths, ResourceResolver resolver, RichConfiguration richConfig) {
-		Session session = resolver.adaptTo(Session.class);
-		String groupName = computeGroupName(type, type.isGlobalGroup() ? "" : contentPath, richConfig);
-		Group group = groupManagerService.createGroup(groupPath, groupName, session);
-		log.trace("Created group {} on path {}.", groupName, groupPath);
-		List<String> allPaths = new ArrayList<>();
-		if (StringUtils.isNotEmpty(contentPath)){
-			allPaths.add(contentPath);
+		if (resolver == null || type == null || wrappedGroups == null) {
+			log.info("Null values not allowed.");
+			throw new IllegalArgumentException("Null values not allowed.");
+		} else {
+			Session session = resolver.adaptTo(Session.class);
+			String groupName = computeGroupName(type, type.isGlobalGroup() ? "" : contentPath, richConfig);
+			Group group = groupManagerService.createGroup(groupPath, groupName, session);
+			if (group != null) {
+				log.trace("Created group {} on path {}.", groupName, groupPath);
+				List<String> allPaths = new ArrayList<>();
+				if (StringUtils.isNotEmpty(contentPath)) {
+					allPaths.add(contentPath);
+				}
+				if (resourcePaths != null) {
+					allPaths.addAll(resourcePaths);
+				}
+				GroupWrapper wrapper = new GroupWrapper(group, type, allPaths);
+				wrappedGroups.put(type, wrapper);
+			} else {
+				log.info("Group could not be created.");
+			}
 		}
-		allPaths.addAll(resourcePaths);
-		GroupWrapper wrapper = new GroupWrapper(group, type, allPaths);
-		wrappedGroups.put(type, wrapper);
 	}
 
 	/**
@@ -338,32 +349,36 @@ public class DefaultTenantSecurityServiceImpl implements TenantSecurityService {
 				session.refresh(true);
 				log.info("Adding top level group to workflow users.");
 				Group workflowUsers = groupManagerService.getGroup("workflow-users", session);
-				workflowUsers.addMember(group);
-				session.save();
+				if (workflowUsers != null) {
+					workflowUsers.addMember(group);
+					session.save();
+				} else {
+					log.info("Group workflow-users has not been found. Cannot add {}.", group.getID());
+				}
 			}
 		} catch (RepositoryException ex) {
 			log.error("Could not add group to AEM standard groups: {}", ex.getMessage());
 		}
 	}
 
-	/**
-	 * Compute group name based on type and path.
-	 * @param type			group type
-	 * @param path			content path
-	 * @param richConfig	configuration
-	 * @return				group name
-	 */
-	private String computeGroupName(GroupType type, String path, RichConfiguration richConfig) {
-		StringBuilder groupName = new StringBuilder();
-		if (StringUtils.isNotEmpty(path)) {
-			if (!StringUtils.isEmpty(richConfig.getGroupNamePrefix())) {
-				groupName.append(richConfig.getGroupNamePrefix()).append(".");
+	@Override
+	public String computeGroupName(GroupType type, String path, RichConfiguration richConfig) {
+		if (type == null || richConfig == null) {
+			throw new IllegalArgumentException("Type and richConfig must not be null.");
+		} else {
+			StringBuilder groupName = new StringBuilder();
+			if (StringUtils.isNotEmpty(path)) {
+				if (!StringUtils.isEmpty(richConfig.getGroupNamePrefix())) {
+					groupName.append(richConfig.getGroupNamePrefix()).append(".");
+				}
+				String groupPath = StringUtils.replace(StringUtils.substringAfter(path, "/content/"), "/", richConfig.getGroupNameSeperator());
+				groupName.append(groupPath).append(".");
+			} else {
+				log.trace("Path is empty - will return standard group name for type {}.", type.name());
 			}
-			String groupPath = StringUtils.replace(StringUtils.substringAfter(path, "/content/"), "/", richConfig.getGroupNameSeperator());
-			groupName.append(groupPath).append(".");
+			groupName.append(richConfig.getGroupMap().get(type));
+			return groupName.toString();
 		}
-		groupName.append(richConfig.getGroupMap().get(type));
-		return groupName.toString();
 	}
 
 }

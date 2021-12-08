@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * A wrapper object for jackrabbit groups. The object has some additional metadata that is needed to entitle the included groups correctly.
  */
 @Slf4j
-public final class GroupWrapper {
+public class GroupWrapper {
 	private final Group group;
 	private final GroupType type;
 	private PrincipalRule rule;

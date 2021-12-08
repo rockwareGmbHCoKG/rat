@@ -64,7 +64,8 @@ public class DefaultGroupManagerService implements GroupManagerService {
 	public Group createGroup(String path, String groupId, Session session) {
 		List<String> list = new ArrayList<>();
 		list.add(groupId);
-		return createGroups(path, list, session).get(0);
+		List<Group> groupList = createGroups(path, list, session);
+		return groupList.size() > 0 ? groupList.get(0) : null;
 	}
 
 	@Override
