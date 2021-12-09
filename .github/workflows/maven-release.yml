@@ -1,0 +1,59 @@
+# Build validation
+
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+  pull_request:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        java: [8]
+
+    steps:
+      # Check out Git repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up environment with Java and Maven
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'adopt'
+          server-id: rockware-nexus-releases
+          server-username: NEXUS_USERNAME
+          server-password: NEXUS_PASSWORD
+
+      # Set up dependency cache
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Build & verify
+      # TODO: deploy to Nexus
+      # TODO: create release + artifacts
+      # TODO: deploy to mvn central
+      - name: Build and deploy
+        run: mvn -B -U clean install deploy
+        env:
+          NEXUS_USERNAME: ${{secrets.NEXUS_USER}}
+          NEXUS_PASSWORD: ${{secrets.NEXUS_PWD}}
+
+      # Run code coverage check
+      - name: Run code coverage check
+        run: bash <(curl -s https://codecov.io/bash)

@@ -134,6 +134,10 @@ public final class RichConfiguration {
         }
         // top level readers are always needed and active
         groupMap.put(GroupType.TOPLEVEL_READER, globalRATConfig.groupNameToplevelReaders());
+
+        // all groups need to be member of the read_inherit group of the parent resource in order to have
+        // read access propagated up the resource tree correctly.
+        groupMap.put(GroupType.READ_INHERIT, "read-inherit");
     }
 
     /**

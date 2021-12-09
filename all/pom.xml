@@ -24,7 +24,7 @@
     <parent>
         <groupId>de.rockware.aem</groupId>
         <artifactId>rat</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
