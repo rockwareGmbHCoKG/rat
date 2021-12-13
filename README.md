@@ -22,24 +22,27 @@ You might have a service user at hand that has the following rights:
 * jcr:all to /home/groups (needs to be set in the crx/de manually) -> because the user will create and modify groups
 * jcr:all to /content -> setting permissions in the content tree requires those rights to be in place
 
-If not, open the crx explorer to create the user. We will create a user "rockservice" in this example case.
+If not, open the crx explorer to create the user. We will create a user _**rockservice**_ in this example case.
 
-PIC
+![documentation/img.png](documentation/img.png)
 
 Then set the correct rights in /useradmin.
 
-PIC
+![documentation/img_1.png](documentation/img_1.png)
 
-Explicitly add permissions for /home in crx/de.
+Explicitly add permissions for /home in crx/de (we choose jcr:all for the sake of simplicity here).
 
-PIC
+![documentation/img_2.png](documentation/img_2.png)
 
-Finally add a Service User Mapper Amendment
+Finally add a **_Apache Sling Service User Mapper Service Amendment_**.
 
-PIC
+![documentation/img_3.png](documentation/img_3.png)
+
+Now we have a system user that is able to create new groups and modify existing ones as well as add ACL information to resources in the
+repository.
 
 #### 2. Install the package
-Take the current version from github and install it in AEM using the package manager.
+Take the current version from [github](https://github.com/rockwareGmbHCoKG/rat/releases) and install it in AEM using the package manager.
 
 #### 3. Add the global config
 #### 4. Add the tenant config
