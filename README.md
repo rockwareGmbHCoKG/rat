@@ -43,9 +43,28 @@ repository.
 
 #### 2. Install the package
 Take the current version from [github](https://github.com/rockwareGmbHCoKG/rat/releases) and install it in AEM using the package manager.
+After the installation is complete you should see four packages on your machine.
+
+![documentation/img_4.png](documentation/img_4.png)
 
 #### 3. Add the global config
+The global config needs to be edited in order to tell RAT 
+* which **_global_** groups should be created
+* what their names (with prefix and suffix) should be
+* if read inheritance should be enabled (access to a page automatically gives read access to all subpages)
+* the read access level
+
+![documentation/img_5.png](documentation/img_5.png)
+
 #### 4. Add the tenant config
+The tenant config controls tenant specific settings, for example which folders should be created if a new tenant is created.
+
+For example, if you create a page /content/demo/de, RAT can automatically create /content/dam/demo/de, 
+/content/experiecne-fragments/demo/de and more, it will ensure that parent folders do exist as well and in the end
+if will even set the correct ACLs to all of these folders.
+
+![documentation/img_6.png](documentation/img_6.png)
+
 #### 5. Create a page
 #### 6. Check groups
 #### 7. Check new content nodes
