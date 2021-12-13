@@ -43,30 +43,25 @@ public class GroupWrapper {
 		rule = null;
 		groupRule = null;
 		userRule = null;
+
 		switch (type) {
 			case READ_INHERIT:
 			case READER:
+			case GLOBAL_READER:
 			case TOPLEVEL_READER:
 				rule = new PrincipalRule(true, Permission.READ);
 				break;
+			case GLOBAL_EDITOR:
 			case EDITOR:
 				rule = new PrincipalRule(true, Permission.READ, Permission.CREATE, Permission.MODIFY, Permission.DELETE, Permission.READ_ACL);
 				break;
+			case GLOBAL_PUBLISHER:
 			case PUBLISHER:
 				rule = new PrincipalRule(true, Permission.READ, Permission.CREATE, Permission.MODIFY, Permission.DELETE, Permission.REPLICATE, Permission.READ_ACL);
 				break;
 			case USER_ADMIN:
 				// user admins may edit groups but they cannot create or delete them.
 				groupRule = new PrincipalRule(true, Permission.READ, Permission.MODIFY, Permission.READ_ACL, Permission.EDIT_ACL);
-				break;
-			case GLOBAL_READER:
-				rule = new PrincipalRule(true, Permission.READ);
-				break;
-			case GLOBAL_EDITOR:
-				rule = new PrincipalRule(true, Permission.READ, Permission.CREATE, Permission.MODIFY, Permission.DELETE, Permission.READ_ACL);
-				break;
-			case GLOBAL_PUBLISHER:
-				rule = new PrincipalRule(true, Permission.READ, Permission.CREATE, Permission.MODIFY, Permission.DELETE, Permission.REPLICATE, Permission.READ_ACL);
 				break;
 			case GLOBAL_SUPPORT:
 				rule = new PrincipalRule(true, Permission.ALL);

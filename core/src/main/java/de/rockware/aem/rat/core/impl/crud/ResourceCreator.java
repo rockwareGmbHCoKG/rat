@@ -27,7 +27,7 @@ public class ResourceCreator {
      * @param resourcePath          path to current resource
      * @param richConfiguration     configuration
      * @param resolver              valid resource resolver
-     * @return
+     * @return list with resource paths
      */
     public static List<String> createResources(String resourcePath, RichConfiguration richConfiguration, ResourceResolver resolver) {
         List<String> pathList = new ArrayList<>();

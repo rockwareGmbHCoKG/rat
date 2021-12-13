@@ -38,7 +38,7 @@ public class ResourceHelper {
      * @param absPath       resource path
      * @param primaryType   primary type
      * @param resolver      resource resolver
-     * @return              newly created resource
+     * @return              existing or newly created resource or null
      */
     public static Resource createResource(String absPath, String primaryType, @NotNull ResourceResolver resolver) {
         Resource returnValue = resolver.getResource(absPath);
@@ -49,7 +49,10 @@ public class ResourceHelper {
             // no parent . we are on top level
             if (parentPath.equals("")) {
                 if(isValidCustomTopLevel(absPath)) {
-                    returnValue = createResource(resolver.getResource("/"), StringUtils.substringAfter(absPath, "/"), properties);
+                    Resource rootResource = resolver.getResource("/");
+                    if (rootResource != null) {
+                        returnValue = createResource(rootResource, StringUtils.substringAfter(absPath, "/"), properties);
+                    }
                 } else {
                     log.error("Could not create resource with path {}. Toplevel path is reserved by AEM and should already by there.", absPath);
                 }
